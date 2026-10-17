@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const { message, history } = body;
 
     // Ganti dengan URL API Endpoint dari Flowise Anda
-    const FLOWISE_URL = "http://linux-tip-covered-murphy.trycloudflare.com/api/v1/prediction/8965e597-2bdb-4042-a8a2-51a2a5a56d91";
+    const FLOWISE_URL = "http://essentially-properties-versus-trust.trycloudflare.com/api/v1/prediction/8965e597-2bdb-4042-a8a2-51a2a5a56d91";
 
     const response = await fetch(FLOWISE_URL, {
       method: "POST",
