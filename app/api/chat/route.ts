@@ -15,7 +15,7 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify({
         question: message,
-        history: history || [], // Jika Flowise Anda mengatur memory history
+        streaming: false,
       }),
     });
 
