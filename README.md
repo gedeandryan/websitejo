@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NATHSMM — Website Company Profile + Chatbot
 
-## Getting Started
+Website company profile untuk **NATHSMM**, penyedia jasa Social Media Marketing (SMM):
+likes, views, followers, subscribers, dan engagement untuk Instagram, TikTok, YouTube,
+Facebook, X (Twitter), Shopee, Spotify, dan Telegram.
 
-First, run the development server:
+## Teknologi
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Next.js 16** (App Router, Turbopack, typed routes)
+- **React 19**
+- **TypeScript** (strict)
+- **Tailwind CSS v4** (konfigurasi via `@theme` di `app/globals.css`)
+- **ESLint** (`eslint-config-next`)
+
+## Struktur Project
+
+```
+app/
+  api/chat/route.ts    # API endpoint chatbot (POST)
+  harga/page.tsx       # Daftar harga, paket, kalkulator
+  kontak/page.tsx      # Info kontak + form
+  layanan/page.tsx     # Semua layanan per platform
+  tentang/page.tsx     # Company profile, visi-misi, milestone
+  layout.tsx           # Root layout: Navbar, Footer, Chatbot
+  page.tsx             # Beranda
+components/
+  chat-text.tsx        # Renderer teks bot (*bold* + newline)
+  chatbot.tsx          # Widget chat floating (client)
+  contact-form.tsx     # Form kontak -> WhatsApp (client)
+  footer.tsx
+  navbar.tsx           # Navigasi responsif (client)
+  price-calculator.tsx # Kalkulator harga (client)
+  section-heading.tsx
+lib/
+  chatbot.ts           # Engine chatbot rule-based + estimasi harga
+  content.ts           # Paket, FAQ, testimoni, keunggulan, milestone
+  services.ts          # Data platform & layanan + harga
+  site.ts              # Identitas perusahaan, kontak, navigasi
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Menjalankan
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev      # http://localhost:3000
+npm run build    # build produksi
+npm start        # jalankan hasil build
+npm run lint     # ESLint
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Chatbot NATHBot
 
-## Learn More
+Widget chat mengambang di kanan bawah setiap halaman. Balasan diproses di server
+melalui `POST /api/chat` menggunakan engine **rule-based** di `lib/chatbot.ts` —
+tidak memerlukan API key atau layanan eksternal.
 
-To learn more about Next.js, take a look at the following resources:
+### Kemampuan
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Intent           | Contoh input                        |
+| ---------------- | ----------------------------------- |
+| `greeting`       | "halo"                              |
+| `price-estimate` | "harga 1000 likes instagram"        |
+| `price-estimate` | "5000 views tiktok berapa?"         |
+| `price-detail`   | "harga followers ig"                |
+| `price-general`  | "berapa harganya?"                  |
+| `how-to-order`   | "cara order"                        |
+| `payment`        | "metode pembayaran"                 |
+| `safety`         | "apakah aman? butuh password?"      |
+| `guarantee`      | "garansi kalau followers turun"     |
+| `speed`          | "berapa lama prosesnya"             |
+| `reseller`       | "mau jadi reseller"                 |
+| `packages`       | "ada paket promo?"                  |
+| `service-list`   | "daftar layanan"                    |
+| `contact`        | "chat admin"                        |
+| `address`        | "alamat kantor"                     |
+| `faq`            | pencocokan kata kunci ke daftar FAQ |
+| `fallback`       | pertanyaan di luar cakupan          |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Estimasi harga otomatis
 
-## Deploy on Vercel
+Bot mendeteksi jumlah unit dari kalimat, termasuk format singkat:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `1000` -> 1.000
+- `1.5k` / `1,5k` -> 1.500
+- `2rb` / `2 ribu` -> 2.000
+- `1jt` / `1 juta` -> 1.000.000
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Jumlah lalu dicocokkan dengan batas min/maks layanan, dan total dihitung dari
+`pricePer1000`. Jika di luar batas, bot memberi peringatan dan menyesuaikan jumlah.
+
+### Menambah / mengubah layanan
+
+Edit `lib/services.ts`. Setiap layanan memiliki `keywords` yang dipakai bot untuk
+pencocokan, jadi cukup tambahkan entri baru — chatbot, halaman Layanan, halaman Harga,
+dan kalkulator akan otomatis ikut terupdate.
+
+## Kustomisasi
+
+- **Identitas & kontak** (nama, WhatsApp, email, alamat, sosial media): `lib/site.ts`
+- **Harga & layanan**: `lib/services.ts`
+- **Paket, FAQ, testimoni, milestone**: `lib/content.ts`
+- **Warna & tema**: blok `@theme inline` di `app/globals.css`
+
+> Catatan: nomor WhatsApp, email, alamat, statistik, dan testimoni saat ini masih berupa
+> data contoh. Ganti nilainya di `lib/site.ts` dan `lib/content.ts` sebelum go-live.
